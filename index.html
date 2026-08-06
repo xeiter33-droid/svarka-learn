@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Учебная платформа по сварке: РДС, аргонодуговая, полуавтомат, материаловедение. Лекции, тесты, прогресс." />
+  <meta name="theme-color" content="#121417" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Сварка · учёба" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-180.png" />
+  <title>Сварка — учёба и тесты</title>
+  <script>
+    (function () {
+      var PROJECT = "svarka-learn";
+      var parts = location.pathname.split("/").filter(Boolean);
+      var onGh = /(^|\.)github\.io$/i.test(location.hostname);
+      if (!onGh || parts[0] !== PROJECT) return;
+      if (parts.length > 1) {
+        location.replace("/" + PROJECT + "/#/" + parts.slice(1).join("/") + location.search);
+        return;
+      }
+      if (!/\/$/.test(location.pathname)) {
+        location.replace("/" + PROJECT + "/" + location.hash + location.search);
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/styles.css?v=1" />
+</head>
+<body>
+  <a class="skip-link" href="#content">К содержимому</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#/" data-nav>
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">
+          <span class="brand-name">Сварка</span>
+          <span class="brand-tag">учёба · тесты</span>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">
+        Меню
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Основная">
+        <a href="#/" data-nav>Курсы</a>
+        <a href="#/cabinet" data-nav>Кабинет</a>
+        <a href="#/login" data-nav>Вход</a>
+        <a href="#/register" data-nav>Регистрация</a>
+        <a href="#/admin" data-nav>Админ</a>
+        <a href="#/sources" data-nav>Источники</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content" class="content"></main>
+
+  <footer class="site-footer">
+    <p>
+      Учебные материалы по пособиям и ГОСТ (Васильев, 2011; Малеткина, 2015).
+      Для практики сверяйте с действующей редакцией стандарта и требованиями НАКС / заказчика.
+    </p>
+  </footer>
+
+  <script src="./js/lms-data.js?v=1"></script>
+  <script src="./js/lms-auth.js?v=1"></script>
+  <script src="./js/lms.js?v=1"></script>
+  <script src="./js/app.js?v=1"></script>
+</body>
+</html>
