@@ -4,6 +4,14 @@
 
 Стилистика как у [svarka-app](https://xeiter33-droid.github.io/svarka-app/).
 
+## Онлайн
+
+- **Рабочее зеркало:** https://cdn.jsdelivr.net/gh/xeiter33-droid/svarka-learn@master/docs/index.html  
+- **Альтернатива:** https://raw.githack.com/xeiter33-droid/svarka-learn/master/docs/index.html  
+- GitHub Pages: https://xeiter33-droid.github.io/svarka-learn/ (если сборка GitHub снова заработает)
+
+Публикация идёт из папки `docs/`.
+
 ## Курсы
 
 1. Основы сварки  
