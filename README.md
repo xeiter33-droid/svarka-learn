@@ -6,11 +6,15 @@
 
 ## Онлайн
 
-- **Рабочее зеркало:** https://cdn.jsdelivr.net/gh/xeiter33-droid/svarka-learn@master/docs/index.html  
-- **Альтернатива:** https://raw.githack.com/xeiter33-droid/svarka-learn/master/docs/index.html  
-- GitHub Pages: https://xeiter33-droid.github.io/svarka-learn/ (если сборка GitHub снова заработает)
+Сайт готов в репозитории (`docs/` и ветка `gh-pages`).
 
-Публикация идёт из папки `docs/`.
+**Сейчас открывайте зеркало** (GitHub Pages/Actions в major outage):  
+https://cdn.jsdelivr.net/gh/xeiter33-droid/svarka-learn@gh-pages/index.html
+
+После восстановления GitHub Pages заработает:  
+https://xeiter33-droid.github.io/svarka-learn/
+
+Статус инцидента: https://www.githubstatus.com/
 
 ## Курсы
 
