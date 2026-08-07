@@ -196,15 +196,17 @@
     const lessons = course.lessons
       .map((raw, idx) => {
         const l = mergeLesson(course, raw);
-        const done = user && st && user.progress?.[course.id]?.lessons?.[l.id]?.done;
+        const lp = user && user.progress?.[course.id]?.lessons?.[l.id];
+        const done = lp?.done;
+        const mini = lp?.miniQuiz;
         return `
           <a class="lms-lesson-row" href="#/lesson/${esc(course.id)}/${esc(l.id)}" data-nav>
             <span class="lms-num">${idx + 1}</span>
             <span>
               <strong>${esc(l.title)}</strong>
-              <span class="muted">${l.minutes || "—"} мин</span>
+              <span class="muted">${l.minutes || "—"} мин${l.quiz ? " · мини-тест" : ""}</span>
             </span>
-            <span class="tag ${done ? "ok" : ""}">${done ? "пройден" : "открыть"}</span>
+            <span class="tag ${done ? "ok" : ""}">${done ? (mini?.passed ? "урок+тест" : "пройден") : "открыть"}</span>
           </a>`;
       })
       .join("");
@@ -258,6 +260,8 @@
     const idx = course.lessons.findIndex((l) => l.id === lessonId);
     const prev = course.lessons[idx - 1];
     const next = course.lessons[idx + 1];
+    const mini = lesson.quiz;
+    const miniDone = user?.progress?.[course.id]?.lessons?.[lesson.id]?.miniQuiz;
 
     return `
       ${authBar(user)}
@@ -270,6 +274,20 @@
         <p class="muted">${lesson.minutes || "—"} мин · урок ${idx + 1} из ${course.lessons.length}</p>
         <div class="lms-figures">${imgs}</div>
         <div class="lms-body prose">${lesson.html || ""}</div>
+        ${
+          mini
+            ? `<div class="card" style="margin-top:1.25rem">
+                <h3>Проверка по уроку</h3>
+                <p class="muted">${mini.questions.length} вопроса · порог ${mini.passScore}%</p>
+                ${
+                  miniDone
+                    ? `<p>Результат: <strong>${miniDone.score}%</strong> ${miniDone.passed ? "(зачёт)" : "(повторите)"}</p>`
+                    : ""
+                }
+                <a class="btn btn-primary" href="#/quiz/${esc(course.id)}/${esc(lesson.id)}" data-nav>Пройти мини-тест</a>
+              </div>`
+            : ""
+        }
         <div class="lms-lesson-actions">
           ${
             user
@@ -278,27 +296,36 @@
               : `<a class="btn btn-ghost" href="#/login" data-nav>Войдите, чтобы сохранить прогресс</a>`
           }
           ${prev ? `<a class="btn btn-ghost" href="#/lesson/${esc(course.id)}/${esc(prev.id)}" data-nav>← Предыдущий</a>` : ""}
-          ${next ? `<a class="btn btn-ghost" href="#/lesson/${esc(course.id)}/${esc(next.id)}" data-nav>Следующий →</a>` : `<a class="btn btn-primary" href="#/quiz/${esc(course.id)}" data-nav>К тесту блока</a>`}
+          ${next ? `<a class="btn btn-ghost" href="#/lesson/${esc(course.id)}/${esc(next.id)}" data-nav>Следующий →</a>` : `<a class="btn btn-primary" href="#/quiz/${esc(course.id)}" data-nav>К итоговому тесту</a>`}
         </div>
       </article>`;
   }
 
-  function renderQuiz(courseId) {
+  function renderQuiz(courseId, lessonId) {
     const course = (Data.courses || []).find((c) => c.id === courseId);
-    if (!course?.quiz) return `<div class="page-head"><h1>Тест не найден</h1></div>`;
+    if (!course) return `<div class="page-head"><h1>Тест не найден</h1></div>`;
+
+    const lesson = lessonId ? course.lessons.find((l) => l.id === lessonId) : null;
+    const quiz = lesson ? lesson.quiz : course.quiz;
+    if (!quiz) return `<div class="page-head"><h1>Тест не найден</h1></div>`;
+
     const user = currentUser();
-    const st = Auth.courseStats(user, course);
-    if (user && !st.allLessonsDone) {
-      return `
-        ${authBar(user)}
-        <div class="page-head">
-          <h1>${esc(course.quiz.title)}</h1>
-          <p>Сначала завершите все уроки курса (${st.done}/${st.total}).</p>
-          <a class="btn btn-primary" href="#/course/${esc(course.id)}" data-nav>К урокам</a>
-        </div>`;
+    const isMini = !!lesson;
+
+    if (!isMini) {
+      const st = Auth.courseStats(user, course);
+      if (user && !st.allLessonsDone) {
+        return `
+          ${authBar(user)}
+          <div class="page-head">
+            <h1>${esc(quiz.title)}</h1>
+            <p>Сначала завершите все уроки курса (${st.done}/${st.total}).</p>
+            <a class="btn btn-primary" href="#/course/${esc(course.id)}" data-nav>К урокам</a>
+          </div>`;
+      }
     }
 
-    const qs = course.quiz.questions
+    const qs = quiz.questions
       .map((q, i) => {
         const opts = q.options
           .map(
@@ -320,10 +347,15 @@
     return `
       ${authBar(user)}
       <div class="page-head">
-        <h1>${esc(course.quiz.title)}</h1>
-        <p>Проходной балл: ${course.quiz.passScore}%. Ответьте на все вопросы.</p>
+        <p class="crumb">
+          <a href="#/" data-nav>Учёба</a> /
+          <a href="#/course/${esc(course.id)}" data-nav>${esc(course.title)}</a>
+          ${lesson ? ` / <a href="#/lesson/${esc(course.id)}/${esc(lesson.id)}" data-nav>${esc(lesson.title)}</a>` : ""}
+        </p>
+        <h1>${esc(quiz.title)}</h1>
+        <p>Проходной балл: ${quiz.passScore}%. ${isMini ? "Мини-тест по уроку." : "Итоговый тест блока."}</p>
       </div>
-      <form id="lmsQuizForm" data-course="${esc(course.id)}">
+      <form id="lmsQuizForm" data-course="${esc(course.id)}" data-lesson="${esc(lessonId || "")}" data-mini="${isMini ? "1" : "0"}">
         ${qs}
         <button class="btn btn-primary" type="submit">Сдать тест</button>
       </form>
@@ -461,6 +493,7 @@
     if (a === "sources") return renderSources();
     if (a === "course" && b) return renderCourse(b);
     if (a === "lesson" && b && c) return renderLesson(b, c);
+    if (a === "quiz" && b && c) return renderQuiz(b, c);
     if (a === "quiz" && b) return renderQuiz(b);
     return renderLearnHome();
   }
@@ -510,37 +543,63 @@
     document.getElementById("lmsQuizForm")?.addEventListener("submit", (e) => {
       e.preventDefault();
       const courseId = e.target.getAttribute("data-course");
+      const lessonId = e.target.getAttribute("data-lesson") || "";
+      const isMini = e.target.getAttribute("data-mini") === "1";
       const course = (Data.courses || []).find((c) => c.id === courseId);
       if (!course) return;
+      const lesson = lessonId ? course.lessons.find((l) => l.id === lessonId) : null;
+      const quiz = isMini ? lesson?.quiz : course.quiz;
+      if (!quiz) return;
       const form = new FormData(e.target);
       let correct = 0;
-      for (const q of course.quiz.questions) {
+      for (const q of quiz.questions) {
         const val = form.get("q_" + q.id);
         if (val != null && Number(val) === q.answer) correct++;
       }
-      const score = Math.round((correct / course.quiz.questions.length) * 100);
-      const passed = score >= course.quiz.passScore;
+      const score = Math.round((correct / quiz.questions.length) * 100);
+      const passed = score >= quiz.passScore;
       const user = currentUser();
       if (user) {
-        Auth.saveQuizResult(user.id, courseId, {
-          quizId: course.quiz.id,
-          score,
-          correct,
-          total: course.quiz.questions.length,
-          passed,
-        });
+        if (isMini) {
+          Auth.saveLessonQuiz(user.id, courseId, lessonId, {
+            quizId: quiz.id,
+            score,
+            correct,
+            total: quiz.questions.length,
+            passed,
+          });
+        } else {
+          Auth.saveQuizResult(user.id, courseId, {
+            quizId: quiz.id,
+            score,
+            correct,
+            total: quiz.questions.length,
+            passed,
+          });
+        }
       }
       const box = document.getElementById("lmsQuizResult");
       if (box) {
+        const back = isMini
+          ? `#/lesson/${esc(courseId)}/${esc(lessonId)}`
+          : `#/course/${esc(courseId)}`;
+        const retry = isMini
+          ? `#/quiz/${esc(courseId)}/${esc(lessonId)}`
+          : `#/quiz/${esc(courseId)}`;
         box.innerHTML = `
           <div class="card" style="margin-top:1rem">
             <h3>${passed ? "Зачёт" : "Нужно повторить материал"}</h3>
-            <p>Результат: <strong>${score}%</strong> (${correct} из ${course.quiz.questions.length})</p>
-            <a class="btn btn-ghost" href="#/course/${esc(courseId)}" data-nav>К курсу</a>
-            ${!passed ? `<a class="btn btn-primary" href="#/quiz/${esc(courseId)}" data-nav>Ещё попытка</a>` : ""}
+            <p>Результат: <strong>${score}%</strong> (${correct} из ${quiz.questions.length})</p>
+            <a class="btn btn-ghost" href="${back}" data-nav>${isMini ? "К уроку" : "К курсу"}</a>
+            ${!passed ? `<a class="btn btn-primary" href="${retry}" data-nav>Ещё попытка</a>` : ""}
+            ${
+              isMini && passed
+                ? `<a class="btn btn-primary" href="#/course/${esc(courseId)}" data-nav>К списку уроков</a>`
+                : ""
+            }
           </div>`;
       }
-      toast(passed ? `Тест сдан: ${score}%` : `Пока ${score}% — порог ${course.quiz.passScore}%`);
+      toast(passed ? `Тест сдан: ${score}%` : `Пока ${score}% — порог ${quiz.passScore}%`);
     });
 
     // Admin binders
