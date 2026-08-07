@@ -136,10 +136,30 @@
     if (!u) return null;
     u.progress = u.progress || {};
     u.progress[courseId] = u.progress[courseId] || { lessons: {}, quiz: null };
+    const prev = u.progress[courseId].lessons[lessonId] || {};
     u.progress[courseId].lessons[lessonId] = {
+      ...prev,
       done: true,
       at: new Date().toISOString(),
     };
+    saveUsers(users);
+    return u;
+  }
+
+  function saveLessonQuiz(userId, courseId, lessonId, result) {
+    const users = getUsers();
+    const u = users.find((x) => x.id === userId);
+    if (!u) return null;
+    u.progress = u.progress || {};
+    u.progress[courseId] = u.progress[courseId] || { lessons: {}, quiz: null };
+    const prev = u.progress[courseId].lessons[lessonId] || {};
+    u.progress[courseId].lessons[lessonId] = {
+      ...prev,
+      miniQuiz: { ...result, at: new Date().toISOString() },
+      done: prev.done || !!result.passed,
+    };
+    u.quizResults = u.quizResults || {};
+    u.quizResults[result.quizId || `${courseId}:${lessonId}`] = u.progress[courseId].lessons[lessonId].miniQuiz;
     saveUsers(users);
     return u;
   }
@@ -248,6 +268,7 @@
     logout,
     updateUser,
     markLessonComplete,
+    saveLessonQuiz,
     saveQuizResult,
     courseStats,
     getAssignments,
