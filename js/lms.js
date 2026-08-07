@@ -278,7 +278,7 @@
           mini
             ? `<div class="card" style="margin-top:1.25rem">
                 <h3>Проверка по уроку</h3>
-                <p class="muted">${mini.questions.length} вопроса · порог ${mini.passScore}%</p>
+                <p class="muted">${mini.questions.length} вопросов · порог ${mini.passScore}%</p>
                 ${
                   miniDone
                     ? `<p>Результат: <strong>${miniDone.score}%</strong> ${miniDone.passed ? "(зачёт)" : "(повторите)"}</p>`
