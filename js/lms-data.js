@@ -1,4 +1,5 @@
-/* LMS data v13: cast iron white + CHVG, expanded materials. */\nwindow.LMS_DATA = {
+/* LMS data v13: cast iron white + CHVG, expanded materials. */
+window.LMS_DATA = {
   "version": 13,
   "generatedAt": "2026-08-10",
   "adminHint": "Логин admin / пароль AdminSvarka2024!",
@@ -10387,4 +10388,4 @@
       }
     }
   ]
-};\n
+};
