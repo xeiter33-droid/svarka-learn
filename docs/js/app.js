@@ -74,4 +74,35 @@
 
   window.addEventListener("hashchange", mount);
   mount();
+
+  /* Content protection: block casual copy, save, view-source shortcuts, image drag/context menu. */
+  document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+  });
+  document.addEventListener("dragstart", (e) => {
+    if (e.target && (e.target.closest("img") || e.target.tagName === "IMG")) {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener("keydown", (e) => {
+    const key = String(e.key || "").toLowerCase();
+    const ctrl = e.ctrlKey || e.metaKey;
+    if (!ctrl) return;
+    if (["c", "x", "s", "u", "p"].includes(key)) {
+      const tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      e.preventDefault();
+    }
+    if (e.shiftKey && key === "i") e.preventDefault();
+    if (key === "f12") e.preventDefault();
+  });
+  document.addEventListener(
+    "copy",
+    (e) => {
+      const tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      e.preventDefault();
+    },
+    true
+  );
 })();
