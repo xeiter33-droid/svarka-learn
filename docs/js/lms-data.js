@@ -1,6 +1,6 @@
-/* LMS data v16: MMA marking/bevels, TIG tungsten, MIG transfer/wires */
+/* LMS data v17: fixed MIG machine polarity diagram */
 window.LMS_DATA = {
-  "version": 16,
+  "version": 17,
   "generatedAt": "2026-08-11",
   "adminHint": "Логин admin / пароль AdminSvarka2024!",
   "sources": [
@@ -6371,7 +6371,7 @@ window.LMS_DATA = {
           "images": [
             {
               "src": "./images/generated/mig-machine.png",
-              "caption": "Схема узлов полуавтомата MIG/MAG (учебная техническая схема)"
+              "caption": "Схема узлов полуавтомата: горелка на «+», масса только на «−» (DCEP)"
             },
             {
               "src": "./images/generated/mig-push-pull.png",
