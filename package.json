@@ -1,0 +1,10 @@
+{
+  "name": "svarka-learn",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Учебная платформа по сварке: лекции, тесты, прогресс, админ-панель",
+  "scripts": {
+    "start": "npx --yes serve . -p 4174",
+    "serve": "npm start"
+  }
+}
