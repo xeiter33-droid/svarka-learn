@@ -1,4 +1,4 @@
-/* LMS data v25: + Kolganov cross-check; tech materials course in lms-data-techmat.js */
+/* LMS data v27: + Kolganov cross-check; tech materials course in lms-data-techmat.js */
 window.LMS_DATA = {
   "version": 25,
   "generatedAt": "2026-09-23",
@@ -1229,7 +1229,7 @@ window.LMS_DATA = {
               "caption": "Этапы технологии сварки"
             },
             {
-              "src": "./images/generated/basics-seam-length.png?v=26",
+              "src": "./images/generated/basics-seam-length.png?v=27",
               "caption": "Длина шва: короткие <250; средние 250–1000 (от центра / обратноступенчатый); длинные >1000 (два сварщика)"
             }
           ],
