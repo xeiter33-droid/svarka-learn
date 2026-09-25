@@ -1229,7 +1229,7 @@ window.LMS_DATA = {
               "caption": "Этапы технологии сварки"
             },
             {
-              "src": "./images/generated/basics-seam-length.png?v=25",
+              "src": "./images/generated/basics-seam-length.png?v=26",
               "caption": "Длина шва: короткие <250; средние 250–1000 (от центра / обратноступенчатый); длинные >1000 (два сварщика)"
             }
           ],
